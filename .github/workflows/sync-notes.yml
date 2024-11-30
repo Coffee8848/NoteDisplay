@@ -49,9 +49,14 @@ jobs:
             fi
           done
 
+      # Check if _notes directory exists and contains files
+      - name: Check if _notes directory exists
+        run: ls -R ./_notes
+
       # Step 4: Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.PAT_TOKEN }}  # 使用 PAT Token
           publish_dir: ./_notes  # 指定你要发布的目录
+          publish_branch: gh-pages
