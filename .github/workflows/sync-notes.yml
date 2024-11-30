@@ -1,4 +1,4 @@
-echo "name: Sync Notes from Notes Repository
+name: Sync Notes from Notes Repository
 
 on:
   schedule:
@@ -18,13 +18,25 @@ jobs:
       - name: Checkout the Notes repository
         uses: actions/checkout@v2
         with:
-          repository: coffee8848/Discrete-Math  # 你的笔记库的仓库名
-          token: \${{ secrets.GITHUB_TOKEN }}
+          repository: coffee8848/Discrete-Math  # 替换为你的笔记库仓库名
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Copy notes to the NoteDisplay repository
         run: |
+          # 创建 _notes 目录
           mkdir -p _notes
-          cp -r ../Discrete-Math/*.md _notes/
+
+          # 遍历笔记库中的所有文件夹和md文件，按章节结构复制到 _notes 文件夹
+          for chapter in $(find ../Discrete-Math -type d); do
+            # 提取章节名称
+            chapter_name=$(basename "$chapter")
+            # 创建对应的章节目录
+            mkdir -p "_notes/$chapter_name"
+            # 复制该章节中的所有 md 文件到 _notes 目录
+            cp "$chapter"/*.md "_notes/$chapter_name/"
+            # 复制该章节中的所有图片文件到 _notes 目录
+            cp -r "$chapter/images" "_notes/$chapter_name/"
+          done
 
       - name: Build the Jekyll site
         run: |
@@ -34,8 +46,8 @@ jobs:
 
       - name: Commit and push changes
         run: |
-          git config --global user.name 'github-actions'
-          git config --global user.email 'github-actions@github.com'
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
           git add .
-          git commit -m '自动同步笔记更新'
-          git push" > .github/workflows/sync-notes.yml
+          git commit -m "自动同步笔记更新"
+          git push
