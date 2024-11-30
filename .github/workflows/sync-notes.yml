@@ -51,7 +51,14 @@ jobs:
 
       # Check if _notes directory exists and contains files
       - name: Check if _notes directory exists
-        run: ls -R ./_notes
+        run: |
+          if [ -d "./_notes" ]; then
+            echo "Found _notes directory!"
+            ls -R ./_notes
+          else
+            echo "_notes directory not found!"
+            exit 1  # 如果没有找到 _notes 目录，退出并报错
+          fi
 
       # Step 4: Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
@@ -60,3 +67,5 @@ jobs:
           github_token: ${{ secrets.PAT_TOKEN }}  # 使用 PAT Token
           publish_dir: ./_notes  # 指定你要发布的目录
           publish_branch: gh-pages
+          # 其他配置项，如果需要，可以启用 force_orphan、exclude_assets 等选项
+          force_orphan: true  # 如果想要创建孤立的 `gh-pages` 分支，可以启用此选项
