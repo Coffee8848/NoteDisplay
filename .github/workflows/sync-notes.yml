@@ -35,7 +35,7 @@ jobs:
             chapter_name=$(basename "$chapter")
             
             # 如果目录下包含 Markdown 文件或图片目录，则处理它
-            if [ -f "$chapter"/*.md ] || [ -d "$chapter/images" ]; then
+            if [ -d "$chapter" ] && ([ -f "$chapter"/*.md ] || [ -d "$chapter/images" ]); then
               # 创建对应的章节目录
               mkdir -p "_notes/$chapter_name"
               
@@ -49,12 +49,23 @@ jobs:
             fi
           done
 
-      # Step 4: Build the Jekyll site
+      # Step 4: Set up Ruby and Bundler
+      - name: Set up Ruby and Bundler
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.0  # 选择 Ruby 版本
+
+      - name: Install dependencies with bundler
+        run: |
+          gem install bundler
+          bundle install
+
+      # Step 5: Build the Jekyll site
       - name: Build the Jekyll site
         run: |
           bundle exec jekyll build
 
-      # Step 5: Deploy to GitHub Pages
+      # Step 6: Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
