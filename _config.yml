@@ -1,5 +1,5 @@
 title: 我的笔记库
 description: 存放笔记的网页
 baseurl: "" # 必须保持为空
-url: "https://coffee8848.github.io/NoteDisplay" # 你的 GitHub Pages URL
+url: "https://Coffee8848.github.io/NoteDisplay" # 你的 GitHub Pages URL
 theme: jekyll-theme-slate # 使用 Jekyll 内置主题，也可以选择其他主题

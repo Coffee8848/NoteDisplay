@@ -1,0 +1,41 @@
+echo "name: Sync Notes from Notes Repository
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 每天0点运行
+  push:
+    branches:
+      - main  # 当主分支有更新时触发
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the NoteDisplay repository
+        uses: actions/checkout@v2
+
+      - name: Checkout the Notes repository
+        uses: actions/checkout@v2
+        with:
+          repository: coffee8848/Discrete-Math  # 你的笔记库的仓库名
+          token: \${{ secrets.GITHUB_TOKEN }}
+
+      - name: Copy notes to the NoteDisplay repository
+        run: |
+          mkdir -p _notes
+          cp -r ../Discrete-Math/*.md _notes/
+
+      - name: Build the Jekyll site
+        run: |
+          gem install bundler
+          bundle install
+          bundle exec jekyll build
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          git add .
+          git commit -m '自动同步笔记更新'
+          git push" > .github/workflows/sync-notes.yml
