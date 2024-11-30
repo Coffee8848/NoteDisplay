@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: coffee8848/Discrete-Math  # 替换为你的笔记库仓库名
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT_TOKEN }}
 
       - name: Copy notes to the NoteDisplay repository
         run: |
