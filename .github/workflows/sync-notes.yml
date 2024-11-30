@@ -29,11 +29,21 @@ jobs:
           # 创建 _notes 目录
           mkdir -p _notes
 
+          # 输出当前工作目录，检查是否正确
+          echo "Current directory: $(pwd)"
+
+          # 检查笔记仓库的文件列表
+          echo "Listing files in the repository:"
+          ls -R
+
           # 遍历笔记库中的所有文件夹，按章节结构复制到 _notes 文件夹
           for chapter in $(find . -type d); do
+            # 输出每个文件夹的路径，便于调试
+            echo "Processing chapter: $chapter"
+
             # 提取章节名称
             chapter_name=$(basename "$chapter")
-            
+
             # 如果目录下包含 Markdown 文件或图片目录，则处理它
             if [ -d "$chapter" ] && ([ -f "$chapter"/*.md ] || [ -d "$chapter/images" ]); then
               # 创建对应的章节目录
