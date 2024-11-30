@@ -29,19 +29,25 @@ jobs:
           # 创建 _notes 目录
           mkdir -p _notes
 
-          # 遍历笔记库中的所有文件夹和 md 文件，按章节结构复制到 _notes 文件夹
+          # 遍历笔记库中的所有文件夹，按章节结构复制到 _notes 文件夹
           for chapter in $(find . -type d); do
             # 提取章节名称
             chapter_name=$(basename "$chapter")
-            # 创建对应的章节目录
-            mkdir -p "_notes/$chapter_name"
-            # 复制该章节中的所有 md 文件到 _notes 目录
-            cp "$chapter"/*.md "_notes/$chapter_name/"
-            # 复制该章节中的所有图片文件到 _notes 目录
-            cp -r "$chapter/images" "_notes/$chapter_name/" || true
+            
+            # 如果目录下包含 Markdown 文件或图片目录，则处理它
+            if [ -f "$chapter"/*.md ] || [ -d "$chapter/images" ]; then
+              # 创建对应的章节目录
+              mkdir -p "_notes/$chapter_name"
+              
+              # 复制该章节中的所有 md 文件到 _notes 目录
+              cp "$chapter"/*.md "_notes/$chapter_name/" || true
+              
+              # 复制该章节中的所有图片文件到 _notes 目录
+              if [ -d "$chapter/images" ]; then
+                cp -r "$chapter/images" "_notes/$chapter_name/" || true
+              fi
+            fi
           done
-
-
 
       # Step 4: Build the Jekyll site
       - name: Build the Jekyll site
