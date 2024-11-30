@@ -12,22 +12,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout the NoteDisplay repository (用于存放Jekyll网站的仓库)
       - name: Checkout the NoteDisplay repository
         uses: actions/checkout@v2
 
+      # Step 2: Checkout the Notes repository (需要同步的笔记库)
       - name: Checkout the Notes repository
         uses: actions/checkout@v2
         with:
           repository: coffee8848/Discrete-Math  # 替换为你的笔记库仓库名
-          token: ${{ secrets.PAT_TOKEN }}
+          token: ${{ secrets.PAT_TOKEN }}  # 使用 PAT Token 以访问私有仓库
 
+      # Step 3: Copy notes to the NoteDisplay repository
       - name: Copy notes to the NoteDisplay repository
         run: |
           # 创建 _notes 目录
           mkdir -p _notes
 
-          # 遍历笔记库中的所有文件夹和md文件，按章节结构复制到 _notes 文件夹
-          for chapter in $(find ../Discrete-Math -type d); do
+          # 遍历笔记库中的所有文件夹和 md 文件，按章节结构复制到 _notes 文件夹
+          for chapter in $(find . -type d); do
             # 提取章节名称
             chapter_name=$(basename "$chapter")
             # 创建对应的章节目录
@@ -35,19 +38,21 @@ jobs:
             # 复制该章节中的所有 md 文件到 _notes 目录
             cp "$chapter"/*.md "_notes/$chapter_name/"
             # 复制该章节中的所有图片文件到 _notes 目录
-            cp -r "$chapter/images" "_notes/$chapter_name/"
+            cp -r "$chapter/images" "_notes/$chapter_name/" || true
           done
 
+      # Step 4: Set up Jekyll environment (利用 GitHub Actions 提供的官方 Jekyll 环境)
+      - name: Set up Jekyll environment
+        uses: jekyll/actions/setup@v1  # 使用官方 Jekyll action
+
+      # Step 5: Build the Jekyll site
       - name: Build the Jekyll site
         run: |
-          gem install bundler
-          bundle install
           bundle exec jekyll build
 
-      - name: Commit and push changes
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
-          git add .
-          git commit -m "自动同步笔记更新"
-          git push
+      # Step 6: Deploy to GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_site  # Jekyll 默认的输出目录
