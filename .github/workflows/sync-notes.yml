@@ -37,7 +37,7 @@ jobs:
           ls -R
 
           # 遍历笔记库中的所有文件夹，按章节结构复制到 _notes 文件夹
-          for chapter in $(find . -type d); do
+          for chapter in $(find . -type d ! -path './.git*'); do  # 排除 .git 目录
             # 输出每个文件夹的路径，便于调试
             echo "Processing chapter: $chapter"
 
